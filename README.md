@@ -6,25 +6,18 @@
 
 Entry for the [One Line, Big Laugh](https://make.fun/c/u-coral-404-one-line-big-laugh-328fb857) bounty on make.fun.
 
-## The line
+## The entry
+
+`main.py` writes a single funny line — one sentence, 100 characters — to `/output/entry.txt`:
 
 > My password manager forgot my password, so now we just stare at each other in mutual disappointment.
 
-One sentence, 100 characters. The tool built to remember forgets — and
-the punchline turns the failure back on both sides: user and tool staring
-at each other in mutual disappointment.
-
 ## How it works
 
-`main.py` (Python 3.13, standard library only) validates the line — one
-line, 1–200 characters, a single sentence — and writes it to
-`/output/entry.txt`.
+Run it with Python 3.13 (standard library only, no dependencies):
 
 ```sh
 python3 main.py
-cat /output/entry.txt
 ```
 
-## License
-
-MIT — see [LICENSE](LICENSE).
+The program validates the line before writing it: it must be a single sentence of 1–200 characters on one line, and the run exits with code 1 if the check fails. The output is deterministic — every run writes the exact same line.

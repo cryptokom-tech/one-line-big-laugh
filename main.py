@@ -1,35 +1,53 @@
 #!/usr/bin/env python3
-"""One Line, Big Laugh — entry program.
+"""One Line, Big Laugh.
 
-Writes a single funny line (1-200 chars) to /output/entry.txt.
-Standard library only. Deterministic: same line on every run.
+Writes one self-contained funny line to /output/entry.txt.
+
+The joke is built from two plain parts: a setup that sounds like an
+ordinary complaint about a password manager, and a payoff that turns
+the tool into a sulking roommate. Nothing is read from disk, the
+network, or the environment, so the output is identical on every run.
 """
 
 import os
 import sys
 
-LINE = "My password manager forgot my password, so now we just stare at each other in mutual disappointment."
+# The single line this entry submits. One sentence, 100 characters.
+PUNCHLINE = (
+    "My password manager forgot my password, so now we just stare "
+    "at each other in mutual disappointment."
+)
+
+TARGET = "/output/entry.txt"
+
+# Characters that close a sentence. The line must carry exactly one.
+CLOSERS = ".!?"
 
 
-def valid(line: str) -> bool:
-    """One non-empty line, 1-200 chars, no newline, a single sentence."""
-    if not line or len(line) > 200 or "\n" in line or "\r" in line:
+def sentence_ok(text):
+    """Return True when *text* is one sentence of 1-200 characters."""
+    if not 1 <= len(text) <= 200:
         return False
-    if line != line.strip():
+    if text != text.strip():
         return False
-    if line.count(".") != 1 or "?" in line or "!" in line:
+    if "\n" in text or "\r" in text:
         return False
-    return line.endswith(".")
+    if sum(1 for ch in text if ch in CLOSERS) != 1:
+        return False
+    if not text.endswith(tuple(CLOSERS)):
+        return False
+    return True
 
 
-def main() -> int:
-    line = LINE.strip()
-    if not valid(line):
-        print("invalid entry line", file=sys.stderr)
+def main():
+    line = PUNCHLINE
+    if not sentence_ok(line):
+        print("invalid line: must be one sentence of 1-200 characters",
+              file=sys.stderr)
         return 1
-    os.makedirs("/output", exist_ok=True)
-    with open("/output/entry.txt", "w", encoding="utf-8") as f:
-        f.write(line)
+    os.makedirs(os.path.dirname(TARGET), exist_ok=True)
+    with open(TARGET, "w", encoding="utf-8") as handle:
+        handle.write(line + "\n")
     return 0
 
 
